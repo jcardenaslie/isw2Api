@@ -243,7 +243,7 @@ $app->get('/lugar_turistico/:name', function($lt_name) {
                 //$response["descripcion"] = $result["descripcion"];
                 $response["selloQ"] = $result["selloQ"];
                 $response["rut_empresario"] = $result["rut_empresario"];
-                $response["ubicacion"] = $result["ubicacion"];
+                $response["lat"] = $result["lat"];
                 echoRespnse(200, $response);
             } else {
                 $response["error"] = true;
@@ -277,7 +277,7 @@ $app->get('/lugares_turisticos', function() {
                 $tmp["descripcion"] = $task["descripcion"];
                 $tmp["selloQ"] = $task["selloQ"];
                 $tmp["rut_empresario"] = $task["rut_empresario"];
-                $tmp["ubicacion"] = $task["ubicacion"];
+                $tmp["lat"] = $task["lat"];
                 array_push($response["tasks"], $tmp);
             }
  
@@ -311,7 +311,7 @@ $app->post('/lugares_turisticos', function() use ($app){
                 $tmp["descripcion"] = $lugares_turisticos["descripcion"];
                 $tmp["selloQ"] = $lugares_turisticos["selloQ"];
                 $tmp["rut_empresario"] = $lugares_turisticos["rut_empresario"];
-                $tmp["ubicacion"] = $lugares_turisticos["ubicacion"];
+                $tmp["lat"] = $lugares_turisticos["lat"];
                 array_push($response["lugares_turisticos"], $tmp);
             }
  
