@@ -288,7 +288,7 @@ $app->get('/lugares_turisticos', function() {
  * method GET
  * url /tasks          
  */
-$app->post('/lugares_turisticos', function() use ($app){
+$app->post('/lugares_turisticos_por_categoria', function() use ($app){
             //global $user_id;
             verifyRequiredParams(array('categoria'));
             
@@ -312,6 +312,7 @@ $app->post('/lugares_turisticos', function() use ($app){
                 $tmp["selloQ"] = $lugares_turisticos["selloQ"];
                 $tmp["rut_empresario"] = $lugares_turisticos["rut_empresario"];
                 $tmp["lat"] = $lugares_turisticos["lat"];
+                $tmp["lon"] = $lugares_turisticos["lon"];
                 array_push($response["lugares_turisticos"], $tmp);
             }
  
@@ -386,6 +387,68 @@ $app->post('/itinerarios', function() use ($app){
             }
  
             echoRespnse(200, $response);
+        });
+
+/**
+ * Recuperar itinerarios
+ * url - /register
+ * method - POST
+ * params - user
+ */
+$app->post('/get_categorias', function() use ($app){
+            //global $user_id;
+            
+            $response = array();
+            $db = new DbHandler();
+ 
+            // fetching all user tasks
+            $result = $db->getCategorias();
+ 
+            $response["error"] = false;
+            $response["categorias"] = array();
+ 
+            // looping through result and preparing tasks array
+            while ($categorias = $result->fetch_assoc()) {
+                $tmp = array();
+                $tmp["nombre_categoria"] = $categorias["nombre_categoria"];
+                array_push($response["categorias"], $tmp);
+            }
+ 
+            echoRespnse(200, $response);
+        });
+
+$app->post('/comentario_post', function() use ($app) {
+            // check for required params
+            verifyRequiredParams(array('user_id', 'lugar_id','calificacion','comentario'));
+ 
+            $response = array();
+ 
+            // reading post params
+            $user = $app->request->post('user_id');
+            $lugar = $app->request->post('lugar_id');
+            $calificacion = $app->request->post('calificacion');
+            $comentario = $app->request->post('comentario');
+
+            // validating email address
+            //validateEmail($email);
+ 
+            $db = new DbHandler();
+            $res = $db->comentarLugar($user, $lugar, $calificacion, $comentario);
+ 
+            /////////////////
+            if ($res == USER_CREATED_SUCCESSFULLY) {
+                $response["error"] = false;
+                $response["message"] = "Creacion de itinerario exitosa";
+                echoRespnse(201, $response);
+            } else if ($res == USER_CREATE_FAILED) {
+                $response["error"] = true;
+                $response["message"] = "Creacion de itinerario fallida";
+                echoRespnse(200, $response);
+            } else if ($res == USER_ALREADY_EXISTED) {
+                $response["error"] = true;
+                $response["message"] = "Sorry, this email already existed";
+                echoRespnse(200, $response);
+            }
         });
 
 /**

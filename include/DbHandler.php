@@ -260,6 +260,19 @@ class DbHandler {
         $stmt->close();
         return $tasks;
     }
+
+
+    /**
+     * Fetching all user tasks
+     * @param String $user_id id of the user
+     */
+    public function getCategorias() {
+        $stmt = $this->conn->prepare("SELECT * FROM categoria");
+        $stmt->execute();
+        $tasks = $stmt->get_result();
+        $stmt->close();
+        return $tasks;
+    }
     
 
     //     /**
@@ -372,7 +385,8 @@ class DbHandler {
         }
     }
 
-        public function getUserItinerarios($user_id) {
+    
+    public function getUserItinerarios($user_id) {
         $stmt = $this->conn->prepare(
             "SELECT nombre, fecha, descripcion FROM itinerario WHERE creador = ?");
         $stmt->bind_param("s", $user_id);
@@ -383,6 +397,29 @@ class DbHandler {
 
     }
 
+    public function comentarLugar($user, $lugar, $calificacion, $comentario) {
+
+        $response = array();
+            $stmt = $this->conn->prepare("INSERT INTO 
+                itinerario(nombre,creador,fecha,descripcion) values(?,?, CURRENT_DATE,?)");
+            $stmt->bind_param("sss", $nombre_itinerario, $userid, $descrp);
+ 
+            $result = $stmt->execute();
+            
+            //$result = getUserItinerarios($userid);
+
+            $stmt->close();
+ 
+            // Check for successful insertion
+            if ($result) {
+                // User successfully inserted
+                //return $result
+                return USER_CREATED_SUCCESSFULLY;
+            } else {
+                // Failed to create user
+                return USER_CREATE_FAILED;
+            }
+    }
 
 }
  
