@@ -571,11 +571,9 @@ $app->post('/comentaro_post', function() use ($app) {
             $comentario = $app->request->post('calificacion');
             $calificacion = $app->request->post('comentario');
             
-            // validating email address
-            //validateEmail($email);
  
             $db = new DbHandler();
-            $res = $db->createItinerario($user, $name, $descrp);
+            $res = $db->createCalificacion($user, $lugar, $comentario, $calificacion);
  
             /////////////////
             if ($res == USER_CREATED_SUCCESSFULLY) {
@@ -592,6 +590,37 @@ $app->post('/comentaro_post', function() use ($app) {
                 echoRespnse(200, $response);
             }
         });
+
+$app->post('/agregar_lugar_itinerario', function() use ($app) {
+            // check for required params
+            verifyRequiredParams(array('lugar_id','id_itinerario'));
+ 
+            $response = array();
+ 
+            // reading post params
+            $id_itinerario = $app->request->post('id_itinerario');
+            $id_lugar = $app->request->post('lugar_id');
+            
+            $db = new DbHandler();
+            $res = $db->agregar_lugar_itinerario($id_itinerario, $id_lugar);
+
+            if ($res == USER_CREATED_SUCCESSFULLY) {
+                $response["error"] = false;
+                $response["message"] = "Creacion de itinerario exitosa";
+                echoRespnse(201, $response);
+            } else if ($res == USER_CREATE_FAILED) {
+                $response["error"] = true;
+                $response["message"] = "Creacion de itinerario fallida";
+                echoRespnse(200, $response);
+            } else if ($res == USER_ALREADY_EXISTED) {
+                $response["error"] = true;
+                $response["message"] = "Sorry, this email already existed";
+                echoRespnse(200, $response);
+            }
+
+        });
+
+
  
 $app->run();
 ?>

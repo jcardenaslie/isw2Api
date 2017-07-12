@@ -7,7 +7,6 @@
  * @author Ravi Tamada
  */
 class DbHandler {
- 
     private $conn;
  
     function __construct() {
@@ -397,6 +396,41 @@ class DbHandler {
 
     }
 
-}
+    public function createCalificacion($user, $lugar, $comentario, $calificacion){
+
+        $response = array();
+        $stmt = $this->conn->prepare("INSERT INTO calificacion(id,puntuacion,comentario) 
+                VALUES('LG227',4.4,'Elvis trabaja algo porfavor'");
+        $stmt->bind_param("sss", $lugar, $calificacion, $comentario);
  
+        $result = $stmt->execute();
+            
+        $stmt->close();
+ 
+        if ($result) {
+            return USER_CREATED_SUCCESSFULLY;
+        } else {
+            return USER_CREATE_FAILED;
+        }
+    }
+
+    public function agregar_lugar_itinerario($id_itinerario, $id_lugar) {
+
+        $response = array();
+        $stmt = $this->conn->prepare("INSERT INTO 
+                itinerario_incluye_lugar(id,lugar) values(?,?)");
+        $stmt->bind_param("is", $id_itinerario, $id_lugar);
+ 
+        $result = $stmt->execute();
+            
+        $stmt->close();
+        if ($result) {
+            return USER_CREATED_SUCCESSFULLY;
+        } else {
+
+            return USER_CREATE_FAILED;
+        }
+    }
+
+}
 ?>
