@@ -599,7 +599,7 @@ $app->post('/agregar_lugar_itinerario', function() use ($app) {
  
             // reading post params
             $id_itinerario = $app->request->post('id_itinerario');
-            $id_lugar = $app->request->post('lugar_id');
+            $id_lugar = $app->request->post('id_lugar');
             
             $db = new DbHandler();
             $res = $db->agregar_lugar_itinerario($id_itinerario, $id_lugar);
