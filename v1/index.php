@@ -559,9 +559,9 @@ $app->post('/get_categorias', function() use ($app){
 //             echoRespnse(200, $response);
 //         });
 
-$app->post('/comentaro_post', function() use ($app) {
+$app->post('/comentario_post', function() use ($app) {
             // check for required params
-            verifyRequiredParams(array('user_id', 'lugar_id','calificacion', 'comentario'));
+            verifyRequiredParams(array('user_id', 'lugar_id','calificacion', 'comentario','fecha'));
  
             $response = array();
  
@@ -570,10 +570,11 @@ $app->post('/comentaro_post', function() use ($app) {
             $lugar = $app->request->post('lugar_id');
             $comentario = $app->request->post('calificacion');
             $calificacion = $app->request->post('comentario');
+            $fecha = $app->request->post('fecha')
             
  
             $db = new DbHandler();
-            $res = $db->createCalificacion($user, $lugar, $comentario, $calificacion);
+            $res = $db->createCalificacion($user, $lugar, $comentario, $calificacion,$fecha);
  
             /////////////////
             if ($res == USER_CREATED_SUCCESSFULLY) {
@@ -606,11 +607,11 @@ $app->post('/agregar_lugar_itinerario', function() use ($app) {
 
             if ($res == USER_CREATED_SUCCESSFULLY) {
                 $response["error"] = false;
-                $response["message"] = "Creacion de itinerario exitosa";
+                $response["message"] = "Agregado itinerario";
                 echoRespnse(201, $response);
             } else if ($res == USER_CREATE_FAILED) {
                 $response["error"] = true;
-                $response["message"] = "Creacion de itinerario fallida";
+                $response["message"] = "Agregado itinerario fallid";
                 echoRespnse(200, $response);
             } else if ($res == USER_ALREADY_EXISTED) {
                 $response["error"] = true;
@@ -620,7 +621,29 @@ $app->post('/agregar_lugar_itinerario', function() use ($app) {
 
         });
 
-
+$app->get('/puntuacion_lugar', function() {
+            verifyRequiredParams(array('calificacion','calificacion_sobre'));
+            
+            $idlugar = $app->request->post('calificacion');
+            $response = array();
+            $db = new DbHandler();
+ 
+            // fetching all user tasks
+            $result = $db->getLugarTuristicoByCategoria($idlugar);
+ 
+            $response["error"] = false;
+            $response["lugares_turisticos"] = array();
+ 
+            // looping through result and preparing tasks array
+            while ($lugares_turisticos = $result->fetch_assoc()) {
+                $tmp = array();
+                $tmp["id_lugar"] = $lugares_turisticos["id_lugar"];
+              
+                array_push($response["lugares_turisticos"], $tmp);
+            }
+ 
+            echoRespnse(200, $response);
+        });
  
 $app->run();
 ?>

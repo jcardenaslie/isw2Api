@@ -272,6 +272,8 @@ class DbHandler {
         $stmt->close();
         return $tasks;
     }
+
+
     
 
     //     /**
@@ -396,12 +398,12 @@ class DbHandler {
 
     }
 
-    public function createCalificacion($user, $lugar, $comentario, $calificacion){
+    public function createCalificacion($user, $lugar, $comentario, $calificacion,$fecha){
 
         $response = array();
-        $stmt = $this->conn->prepare("INSERT INTO calificacion(id,puntuacion,comentario) 
-                VALUES('LG227',4.4,'Elvis trabaja algo porfavor'");
-        $stmt->bind_param("sss", $lugar, $calificacion, $comentario);
+        $stmt = $this->conn->prepare("INSERT INTO calificacion(id,puntuacion,comentario,fecha) 
+                VALUES(?,?,?,date("Y-m-d",time())");
+        $stmt->bind_param("ssss", $lugar, $calificacion, $comentario,$fecha);
  
         $result = $stmt->execute();
             
@@ -430,6 +432,16 @@ class DbHandler {
 
             return USER_CREATE_FAILED;
         }
+    }
+
+    public function getPuntuacion($id_lugar) {(
+            $stmt = $this->conn->prepare("SELECT AVG(puntuacion) from calificacion,calificacion_sobre WHERE calificacion.id=calificacion_sobre.id_calificacion and id_lugar=?");
+        $stmt->bind_param("s", $id_lugar);
+        $stmt->execute();
+        $task = $stmt->get_result();
+        $stmt->close();
+        return $task;
+
     }
 
 }
