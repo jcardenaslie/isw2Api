@@ -417,39 +417,6 @@ $app->post('/get_categorias', function() use ($app){
             echoRespnse(200, $response);
         });
 
-$app->post('/comentario_post', function() use ($app) {
-            // check for required params
-            verifyRequiredParams(array('user_id', 'lugar_id','calificacion','comentario'));
- 
-            $response = array();
- 
-            // reading post params
-            $user = $app->request->post('user_id');
-            $lugar = $app->request->post('lugar_id');
-            $calificacion = $app->request->post('calificacion');
-            $comentario = $app->request->post('comentario');
-
-            // validating email address
-            //validateEmail($email);
- 
-            $db = new DbHandler();
-            $res = $db->comentarLugar($user, $lugar, $calificacion, $comentario);
- 
-            /////////////////
-            if ($res == USER_CREATED_SUCCESSFULLY) {
-                $response["error"] = false;
-                $response["message"] = "Creacion de itinerario exitosa";
-                echoRespnse(201, $response);
-            } else if ($res == USER_CREATE_FAILED) {
-                $response["error"] = true;
-                $response["message"] = "Creacion de itinerario fallida";
-                echoRespnse(200, $response);
-            } else if ($res == USER_ALREADY_EXISTED) {
-                $response["error"] = true;
-                $response["message"] = "Sorry, this email already existed";
-                echoRespnse(200, $response);
-            }
-        });
 
 /**
 // /**
@@ -591,6 +558,40 @@ $app->post('/comentario_post', function() use ($app) {
 //             }
 //             echoRespnse(200, $response);
 //         });
+
+$app->post('/comentaro_post', function() use ($app) {
+            // check for required params
+            verifyRequiredParams(array('user_id', 'lugar_id','calificacion', 'comentario'));
+ 
+            $response = array();
+ 
+            // reading post params
+            $user = $app->request->post('user_idid');
+            $lugar = $app->request->post('lugar_id');
+            $comentario = $app->request->post('calificacion');
+            $calificacion = $app->request->post('comentario');
+            
+            // validating email address
+            //validateEmail($email);
+ 
+            $db = new DbHandler();
+            $res = $db->createItinerario($user, $name, $descrp);
+ 
+            /////////////////
+            if ($res == USER_CREATED_SUCCESSFULLY) {
+                $response["error"] = false;
+                $response["message"] = "Creacion de itinerario exitosa";
+                echoRespnse(201, $response);
+            } else if ($res == USER_CREATE_FAILED) {
+                $response["error"] = true;
+                $response["message"] = "Creacion de itinerario fallida";
+                echoRespnse(200, $response);
+            } else if ($res == USER_ALREADY_EXISTED) {
+                $response["error"] = true;
+                $response["message"] = "Sorry, this email already existed";
+                echoRespnse(200, $response);
+            }
+        });
  
 $app->run();
 ?>
