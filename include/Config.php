@@ -3,10 +3,10 @@
 /**
  * Database configuration
  */
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'isw2');
+define('DB_USERNAME', 'elvisrios');
+define('DB_PASSWORD', '090540133a');
+define('DB_HOST', 'is2.cvfcsofjwxqn.sa-east-1.rds.amazonaws.com');
+define('DB_NAME', 'isw2Proyecto');
  
 define('USER_CREATED_SUCCESSFULLY', 0);
 define('USER_CREATE_FAILED', 1);

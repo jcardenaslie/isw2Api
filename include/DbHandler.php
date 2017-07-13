@@ -237,7 +237,9 @@ class DbHandler {
      */
     public function getLugarTuristicoByCategoria($categoria) {
         $stmt = $this->conn->prepare(
-            "SELECT * FROM lugar JOIN posee ON lugar.id_lugar = posee.id_lugar WHERE categoria = ?");
+            "SELECT * 
+            FROM lugar JOIN posee ON lugar.id_lugar = posee.id_lugar 
+            WHERE categoria = ?");
         // $stmt = $this->conn->prepare(
         //     "SELECT * FROM posee WHERE categoria = ?");
         $stmt->bind_param("s", $categoria);
@@ -255,6 +257,19 @@ class DbHandler {
      */
     public function getAllLTs() {
         $stmt = $this->conn->prepare("SELECT * FROM lugar LIMIT 10");
+        $stmt->execute();
+        $tasks = $stmt->get_result();
+        $stmt->close();
+        return $tasks;
+    }
+
+
+    /**
+     * Fetching all user tasks
+     * @param String $user_id id of the user
+     */
+    public function getCategorias() {
+        $stmt = $this->conn->prepare("SELECT * FROM categoria");
         $stmt->execute();
         $tasks = $stmt->get_result();
         $stmt->close();
@@ -382,6 +397,76 @@ class DbHandler {
         return $task;
 
     }
+
+    public function createCalificacion($user, $lugar, $comentario, $calificacion){
+
+        $response = array();
+        $stmt = $this->conn->prepare("INSERT INTO calificacion(puntuacion,comentario,fecha) 
+                 VALUES(?,?,CURRENT_TIMESTAMP)");
+        $stmt->bind_param("is", $calificacion, $comentario);
+ 
+        $result = $stmt->execute();
+
+        $stmt = $this->conn->prepare("
+            INSERT INTO calificacion_sobre(nombre_usuario, id_lugar) 
+            VALUES(?,?)");
+
+        $stmt->bind_param("ss", $user, $lugar);
+ 
+        $result2 = $stmt->execute();
+
+            
+        $stmt->close();
+
+        //$result2 = createCalificacionSobreLugar($user, $lugar);
+ 
+        if ($result && $result2) {
+            return USER_CREATED_SUCCESSFULLY;
+        } else {
+            return USER_CREATE_FAILED;
+        }
+    }
+
+    public function createCalificacionSobreLugar($user, $lugar){
+
+        $response = array();
+        $stmt = $this->conn->prepare("
+            INSERT INTO calificacion_sobre(nombre_usuario, id_lugar) 
+            VALUES(?,?)");
+
+        $stmt->bind_param("ss", $user, $lugar);
+ 
+        $result = $stmt->execute();
+            
+        $stmt->close();
+ 
+        if ($result) {
+            return USER_CREATED_SUCCESSFULLY;
+        } else {
+            return USER_CREATE_FAILED;
+        }
+    }
+
+    // public function createCalificacionSobre($user, $lugar){
+
+    //     $response = array();
+    //     $stmt = $this->conn->prepare("
+    //         INSERT INTO calificacion_sobre(nombre_usuario, id_lugar) 
+    //         VALUES(?,?");
+    //     $stmt->bind_param("ss", $user, $lugar);
+ 
+    //     $result = $stmt->execute();
+            
+    //     $stmt->close();
+ 
+    //     if ($result) {
+    //         return USER_CREATED_SUCCESSFULLY;
+    //     } else {
+    //         return USER_CREATE_FAILED;
+    //     }
+    // }
+
+    
 
 
 }
