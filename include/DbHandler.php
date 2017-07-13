@@ -7,6 +7,7 @@
  * @author Ravi Tamada
  */
 class DbHandler {
+ 
     private $conn;
  
     function __construct() {
@@ -236,7 +237,9 @@ class DbHandler {
      */
     public function getLugarTuristicoByCategoria($categoria) {
         $stmt = $this->conn->prepare(
-            "SELECT * FROM lugar JOIN posee ON lugar.id_lugar = posee.id_lugar WHERE categoria = ?");
+            "SELECT * 
+            FROM lugar JOIN posee ON lugar.id_lugar = posee.id_lugar 
+            WHERE categoria = ?");
         // $stmt = $this->conn->prepare(
         //     "SELECT * FROM posee WHERE categoria = ?");
         $stmt->bind_param("s", $categoria);
@@ -272,8 +275,6 @@ class DbHandler {
         $stmt->close();
         return $tasks;
     }
-
-
     
 
     //     /**
@@ -386,8 +387,7 @@ class DbHandler {
         }
     }
 
-    
-    public function getUserItinerarios($user_id) {
+        public function getUserItinerarios($user_id) {
         $stmt = $this->conn->prepare(
             "SELECT nombre, fecha, descripcion FROM itinerario WHERE creador = ?");
         $stmt->bind_param("s", $user_id);
@@ -398,12 +398,43 @@ class DbHandler {
 
     }
 
-    public function createCalificacion($user, $lugar, $comentario, $calificacion,$fecha){
+    public function createCalificacion($user, $lugar, $comentario, $calificacion){
 
         $response = array();
-        $stmt = $this->conn->prepare("INSERT INTO calificacion(id,puntuacion,comentario,fecha) 
-                VALUES(?,?,?,date("Y-m-d",time())");
-        $stmt->bind_param("ssss", $lugar, $calificacion, $comentario,$fecha);
+        $stmt = $this->conn->prepare("INSERT INTO calificacion(puntuacion,comentario,fecha) 
+                 VALUES(?,?,CURRENT_TIMESTAMP)");
+        $stmt->bind_param("is", $calificacion, $comentario);
+ 
+        $result = $stmt->execute();
+
+        $stmt = $this->conn->prepare("
+            INSERT INTO calificacion_sobre(nombre_usuario, id_lugar) 
+            VALUES(?,?)");
+
+        $stmt->bind_param("ss", $user, $lugar);
+ 
+        $result2 = $stmt->execute();
+
+            
+        $stmt->close();
+
+        //$result2 = createCalificacionSobreLugar($user, $lugar);
+ 
+        if ($result && $result2) {
+            return USER_CREATED_SUCCESSFULLY;
+        } else {
+            return USER_CREATE_FAILED;
+        }
+    }
+
+    public function createCalificacionSobreLugar($user, $lugar){
+
+        $response = array();
+        $stmt = $this->conn->prepare("
+            INSERT INTO calificacion_sobre(nombre_usuario, id_lugar) 
+            VALUES(?,?)");
+
+        $stmt->bind_param("ss", $user, $lugar);
  
         $result = $stmt->execute();
             
@@ -416,33 +447,28 @@ class DbHandler {
         }
     }
 
-    public function agregar_lugar_itinerario($id_itinerario, $id_lugar) {
+    // public function createCalificacionSobre($user, $lugar){
 
-        $response = array();
-        $stmt = $this->conn->prepare("INSERT INTO 
-                itinerario_incluye_lugar(id,lugar) values(?,?)");
-        $stmt->bind_param("is", $id_itinerario, $id_lugar);
+    //     $response = array();
+    //     $stmt = $this->conn->prepare("
+    //         INSERT INTO calificacion_sobre(nombre_usuario, id_lugar) 
+    //         VALUES(?,?");
+    //     $stmt->bind_param("ss", $user, $lugar);
  
-        $result = $stmt->execute();
+    //     $result = $stmt->execute();
             
-        $stmt->close();
-        if ($result) {
-            return USER_CREATED_SUCCESSFULLY;
-        } else {
+    //     $stmt->close();
+ 
+    //     if ($result) {
+    //         return USER_CREATED_SUCCESSFULLY;
+    //     } else {
+    //         return USER_CREATE_FAILED;
+    //     }
+    // }
 
-            return USER_CREATE_FAILED;
-        }
-    }
+    
 
-    public function getPuntuacion($id_lugar) {(
-            $stmt = $this->conn->prepare("SELECT AVG(puntuacion) from calificacion,calificacion_sobre WHERE calificacion.id=calificacion_sobre.id_calificacion and id_lugar=?");
-        $stmt->bind_param("s", $id_lugar);
-        $stmt->execute();
-        $task = $stmt->get_result();
-        $stmt->close();
-        return $task;
-
-    }
 
 }
+ 
 ?>
