@@ -325,7 +325,7 @@ $app->post('/lugares_turisticos_por_categoria', function() use ($app){
  * method - POST
  * params - user, nombre, pass, correo
  */
-$app->post('/itinerario', function() use ($app) {
+$app->post('/itinerario_post', function() use ($app) {
             // check for required params
             verifyRequiredParams(array('userid', 'nombre_itinerario','descripcion'));
  
@@ -363,7 +363,7 @@ $app->post('/itinerario', function() use ($app) {
  * method - POST
  * params - user
  */
-$app->post('/itinerarios', function() use ($app){
+$app->post('/itinerarios_get', function() use ($app){
             //global $user_id;
             verifyRequiredParams(array('user_id'));
             
@@ -380,6 +380,7 @@ $app->post('/itinerarios', function() use ($app){
             // looping through result and preparing tasks array
             while ($itinerarios = $result->fetch_assoc()) {
                 $tmp = array();
+                $tmp["id"] = $itinerarios["id"];
                 $tmp["nombre"] = $itinerarios["nombre"];
                 $tmp["descripcion"] = $itinerarios["descripcion"];
                 $tmp["fecha"] = $itinerarios["fecha"];
@@ -456,6 +457,83 @@ $app->post('/comentario_post', function() use ($app) {
                 echoRespnse(200, $response);
             }
         });
+
+/**
+// /**
+//  * Creating new task in db
+//  * method POST
+//  * params - name
+//  * url - /tasks/
+//  */
+$app->post('/lugares_turisticos_por_itinerario', function() use ($app){
+            //global $user_id;
+            verifyRequiredParams(array('id_iti'));
+            
+            $id_iti = $app->request->post('id_iti');
+            $response = array();
+            $db = new DbHandler();
+ 
+            // fetching all user tasks
+            $result = $db->getLugarTuristicoByItinerario($id_iti);
+ 
+            $response["error"] = false;
+            $response["lugares_turisticos"] = array();
+ 
+            // looping through result and preparing tasks array
+            while ($lugares_turisticos = $result->fetch_assoc()) {
+                $tmp = array();
+                $tmp["id_lugar"] = $lugares_turisticos["id_lugar"];
+                $tmp["nombre"] = $lugares_turisticos["nombre"];
+                $tmp["comuna"] = $lugares_turisticos["comuna"];
+                $tmp["descripcion"] = $lugares_turisticos["descripcion"];
+                $tmp["selloQ"] = $lugares_turisticos["selloQ"];
+                $tmp["rut_empresario"] = $lugares_turisticos["rut_empresario"];
+                $tmp["lat"] = $lugares_turisticos["lat"];
+                $tmp["lon"] = $lugares_turisticos["lon"];
+                array_push($response["lugares_turisticos"], $tmp);
+            }
+ 
+            echoRespnse(200, $response);
+        });
+
+/**
+// /**
+//  * Creating new task in db
+//  * method POST
+//  * params - name
+//  * url - /tasks/
+//  */
+$app->post('/agregar_lugar_itinerario', function() use ($app) {
+            // check for required params
+            verifyRequiredParams(array('lugar_id','id_itinerario'));
+ 
+            $response = array();
+ 
+            // reading post params
+            $id_itinerario = $app->request->post('id_itinerario');
+            $id_lugar = $app->request->post('lugar_id');
+            
+            $db = new DbHandler();
+            $res = $db->agregar_lugar_itinerario($id_itinerario, $id_lugar);
+
+            if ($res == USER_CREATED_SUCCESSFULLY) {
+                $response["error"] = false;
+                $response["message"] = "Agregado itinerario";
+                echoRespnse(201, $response);
+            } else if ($res == USER_CREATE_FAILED) {
+                $response["error"] = true;
+                $response["message"] = "Agregado itinerario fallido";
+                echoRespnse(200, $response);
+            } else if ($res == USER_ALREADY_EXISTED) {
+                $response["error"] = true;
+                $response["message"] = "Sorry, this email already existed";
+                echoRespnse(200, $response);
+            }
+
+        });
+
+
+
 
 /**
 // /**

@@ -387,9 +387,9 @@ class DbHandler {
         }
     }
 
-        public function getUserItinerarios($user_id) {
+    public function getUserItinerarios($user_id) {
         $stmt = $this->conn->prepare(
-            "SELECT nombre, fecha, descripcion FROM itinerario WHERE creador = ?");
+            "SELECT * FROM itinerario WHERE creador = ?");
         $stmt->bind_param("s", $user_id);
         $stmt->execute();
         $task = $stmt->get_result();
@@ -447,6 +447,51 @@ class DbHandler {
         }
     }
 
+
+    public function getLugarTuristicoByItinerario($id_iti) {
+        $stmt = $this->conn->prepare("SELECT * FROM itinerario_incluye_lugar,lugar WHERE 
+            lugar.id_lugar=itinerario_incluye_lugar.lugar and id=?");
+        // $stmt = $this->conn->prepare(
+        //     "SELECT * FROM posee WHERE categoria = ?");
+        $stmt->bind_param("s", $id_iti);
+        
+        $stmt->execute();
+        $task = $stmt->get_result();
+        $stmt->close();
+        return $task;
+
+    }
+
+    public function agregar_lugar_itinerario($id_itinerario, $id_lugar) {
+
+        $response = array();
+        $stmt = $this->conn->prepare("INSERT INTO 
+                itinerario_incluye_lugar(id,lugar) values(?,?)");
+        $stmt->bind_param("is", $id_itinerario, $id_lugar);
+ 
+        $result = $stmt->execute();
+            
+        $stmt->close();
+        if ($result) {
+            return USER_CREATED_SUCCESSFULLY;
+        } else {
+
+            return USER_CREATE_FAILED;
+        }
+    }
+
+    // public function getPuntuacion($id_lugar) {
+    //     $stmt = $this->conn->prepare("
+    //         SELECT AVG(puntuacion),nombre,lugar.comuna,descripcion,selloQ,rut_empresario,lat,lon,num_c 
+    //         FROM calificacion,calificacion_sobre,lugar 
+    //         WHERE calificacion.id=calificacion_sobre.id_calificacion and lugar.id_lugar=calificacion_sobre.id_lugar and 
+    //             calificacion_sobre.id_lugar=?");
+    //     $stmt->bind_param("s", $id_lugar);
+    //     $stmt->execute();
+    //     $task = $stmt->get_result();
+    //     $stmt->close();
+    //     return $task;
+    // }
     // public function createCalificacionSobre($user, $lugar){
 
     //     $response = array();
