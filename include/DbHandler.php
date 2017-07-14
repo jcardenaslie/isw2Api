@@ -251,6 +251,35 @@ class DbHandler {
 
     }
 
+    public function getLugarTuristicoByCategoria2($categoria) {
+        $stmt = $this->conn->prepare(
+            "SELECT 
+            AVG(puntuacion) as puntuacion,
+            nombre,
+            lugar.id_lugar as id_lugar,
+            lugar.comuna as comuna,
+            descripcion,
+            selloQ,
+            rut_empresario,
+            lat,
+            lon,
+            num_c 
+            FROM posee,
+            calificacion,
+            calificacion_sobre,
+            lugar 
+            WHERE calificacion.id=calificacion_sobre.id_calificacion and lugar.id_lugar=calificacion_sobre.id_lugar and posee.id_lugar=lugar.id_lugar and posee.categoria=? group by lugar.id_lugar");
+        // $stmt = $this->conn->prepare(
+        //     "SELECT * FROM posee WHERE categoria = ?");
+        $stmt->bind_param("s", $categoria);
+        
+        $stmt->execute();
+        $task = $stmt->get_result();
+        $stmt->close();
+        return $task;
+
+    }
+
     /**
      * Fetching all user tasks
      * @param String $user_id id of the user
@@ -478,6 +507,27 @@ class DbHandler {
 
             return USER_CREATE_FAILED;
         }
+    }
+
+    public function getComentariosLugar($id_lugar) {
+        $stmt = $this->conn->prepare("
+            SELECT *
+            FROM calificacion, calificacion_sobre
+            WHERE calificacion_sobre.id_lugar = ? and calificacion.id = calificacion_sobre.id_calificacion
+            ");
+
+        // $stmt->bind_param("s",$id_lugar);
+        // if ($stmt->execute()) {
+        //     return $stmt->get_result()->fetch_assoc();
+        // } else {
+        //     return NULL;
+        // }
+        $stmt->bind_param("s", $id_lugar);
+        
+        $stmt->execute();
+        $task = $stmt->get_result();
+        $stmt->close();
+        return $task;
     }
 
     // public function getPuntuacion($id_lugar) {
